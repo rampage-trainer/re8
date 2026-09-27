@@ -1,0 +1,104 @@
+import Link from "next/link"
+import Image from "next/image"
+import { ArrowDownToLine, Download, ShieldCheck } from "lucide-react"
+import changelogs from "@/data/changelogs.json"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/ui/badge"
+
+type ChangelogsMap = Record<string, string[]>
+
+function loadLatestChangelogItems(): string[] {
+  const map = changelogs as ChangelogsMap
+  const versions = Object.keys(map)
+  if (versions.length === 0) return []
+  const latest = versions.sort((a, b) => (a < b ? 1 : a > b ? -1 : 0))[0]
+  return map[latest] ?? []
+}
+
+export default function Home() {
+  const changelogItems = loadLatestChangelogItems()
+  return (
+    <main className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+      <section className="grid gap-10 md:grid-cols-2 md:gap-14 items-start">
+        <div className="space-y-6">
+          <div className="pt-2">
+            <Image
+              src="/trainer.png"
+              alt="Rampage Trainer logo"
+              width={520}
+              height={520}
+              className="opacity-90 w-[360px] h-auto sm:w-[440px] md:w-[420px]"
+              priority
+            />
+          </div>
+          {/** Intentionally no text/buttons here; moved to the right column below the supported builds card. */}
+        </div>
+        <div className="self-start mt-6 md:mt-10 flex flex-col gap-6">
+          <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="size-4" /> Supported Gamebuilds
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">
+            <div className="grid gap-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <div className="font-medium">Resident Evil Village</div>
+                  <div className="text-muted-foreground">Build 1.2.3.9</div>
+                </div>
+                <Badge className="bg-emerald-600 hover:bg-emerald-600">Supported</Badge>
+              </div>
+            </div>
+          </CardContent>
+          </Card>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground max-w-prose"></p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="https://github.com/rampage-trainer/re8/releases/latest/download/Rampage.zip"
+                className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90"
+              >
+                <Download className="size-4" /> Download Preview
+              </Link>
+              <Link
+                href="https://github.com/praydog/REFramework-nightly/releases"
+                className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90"
+              >
+                <Download className="size-4" /> Download REFramework
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Separator className="my-10" />
+
+      <section className="grid gap-10 md:grid-cols-2 items-start">
+        <div id="install" className="grid gap-6 max-w-prose w-full">
+          <h2 className="text-xl font-semibold tracking-tight">Install Instructions</h2>
+          <ol className="list-decimal list-outside pl-5 space-y-2 text-sm">
+            <li>Download the ZIP File</li>
+            <li>Extract the ZIP File</li>
+            <li>
+              Copy <code>RampageFiles</code> and <code>RampageRE8.dll</code> into your Plugins Folder of REFramework
+            </li>
+          </ol>
+          <p className="text-xs text-muted-foreground">
+            It’s important to always merge the new RampageFiles with your current one when using beta versions.
+          </p>
+        </div>
+
+        <div id="changelog" className="grid gap-6">
+          <h2 className="text-xl font-semibold tracking-tight">Requirements</h2>
+          <ul className="space-y-2 text-sm leading-relaxed list-disc pl-5">
+            {changelogItems.map((item, idx) => (
+              <li key={idx}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </main>
+  )
+}
